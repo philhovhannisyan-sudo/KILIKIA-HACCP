@@ -7,7 +7,7 @@ export default defineConfig({
   timeout: 120_000,
   fullyParallel: true,
   workers: process.env.CI ? 2 : 4,
-  reporter: [['list'], ['json', { outputFile: 'test-results/playwright.json' }]],
+  reporter: [['list'], ['json', { outputFile: 'reports/playwright.json' }]],
   use: { baseURL: `http://localhost:${PORT}`, ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } },
   webServer: {
     command: 'node scripts/start.mjs',

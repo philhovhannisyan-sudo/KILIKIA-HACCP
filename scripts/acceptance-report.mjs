@@ -46,14 +46,14 @@ const add = (title, status, duration, error, kind) => {
   (results[m[1]] ??= []).push({ title, status, duration, error, kind });
 };
 
-if (existsSync('test-results/vitest.json')) {
-  const v = JSON.parse(readFileSync('test-results/vitest.json', 'utf8'));
+if (existsSync('reports/vitest.json')) {
+  const v = JSON.parse(readFileSync('reports/vitest.json', 'utf8'));
   for (const file of v.testResults ?? [])
     for (const a of file.assertionResults ?? [])
       add(a.title, a.status, a.duration ?? 0, (a.failureMessages ?? []).join('\n'), 'unit');
 }
-if (existsSync('test-results/playwright.json')) {
-  const p = JSON.parse(readFileSync('test-results/playwright.json', 'utf8'));
+if (existsSync('reports/playwright.json')) {
+  const p = JSON.parse(readFileSync('reports/playwright.json', 'utf8'));
   const walk = (suite) => {
     for (const s of suite.suites ?? []) walk(s);
     for (const spec of suite.specs ?? [])
