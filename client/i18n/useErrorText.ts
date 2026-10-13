@@ -12,7 +12,9 @@ export function useErrorText() {
         if (Array.isArray(v)) return v.map((x) => (x && typeof x === 'object' ? String((x as { to?: string; code?: string }).to ?? (x as { code?: string }).code ?? JSON.stringify(x)) : String(x))).join(', ') || '—';
         return v && typeof v === 'object' ? JSON.stringify(v) : String(v);
       };
-      const params = Object.fromEntries(Object.entries(e.params).map(([k, v]) => [k, fmt(v)]));
+      // статус партии в сообщении — на языке интерфейса
+      const params = Object.fromEntries(Object.entries(e.params).map(([k, v]) =>
+        [k, k === 'status' && has(`status.batch.${String(v)}`) ? t(`status.batch.${String(v)}` as TKey) : fmt(v)]));
       if (has(key)) return t(key, params);
       return t('error.generic', { message: e.message });
     }

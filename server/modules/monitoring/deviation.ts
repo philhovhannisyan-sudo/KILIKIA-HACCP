@@ -7,14 +7,14 @@ import { ulid } from '../../core/ids';
 import { addDays } from '../../../shared/time';
 
 /** Следующий код вида NC-001. */
-export function nextCode(db: DB, table: string, prefix: string): string {
-  const codes = db.prepare(`SELECT code FROM ${table} WHERE code LIKE ?`).pluck().all(`${prefix}-%`) as string[];
+export function nextCode(db: DB, table: string, prefix: string, column = 'code'): string {
+  const codes = db.prepare(`SELECT ${column} FROM ${table} WHERE ${column} LIKE ?`).pluck().all(`${prefix}-%`) as string[];
   const max = codes.reduce((m, c) => Math.max(m, Number(c.slice(prefix.length + 1)) || 0), 0);
   return `${prefix}-${String(max + 1).padStart(3, '0')}`;
 }
 
 export interface DeviationInput {
-  sourceType: 'monitoring' | 'environment';
+  sourceType: 'monitoring' | 'environment' | 'recall';
   sourceId: string;
   fgBatchId: string | null;
   cpType: 'CCP' | 'OPRP' | null;
@@ -43,7 +43,7 @@ export function registerDeviation(db: DB, actor: Actor, d: DeviationInput): { nc
   const batchCode = d.fgBatchId ? (db.prepare('SELECT code FROM fg_batch WHERE id = ?').pluck().get(d.fgBatchId) as string) : null;
   for (const role of ['haccp_lead', 'qa_lab']) {
     db.prepare(`INSERT INTO notification (id, recipient_role, type, ref_type, ref_id, params, created_at) VALUES (?, ?, ?, 'nonconformity', ?, ?, ?)`)
-      .run(ulid(), role, d.sourceType === 'monitoring' ? 'ccp_deviation' : 'env_deviation', ncId, JSON.stringify({ code: ncCode, batch: batchCode }), now);
+      .run(ulid(), role, ({ monitoring: 'ccp_deviation', environment: 'env_deviation', recall: 'trace_deviation' } as const)[d.sourceType], ncId, JSON.stringify({ code: ncCode, batch: batchCode }), now);
   }
   return { ncId, ncCode };
 }

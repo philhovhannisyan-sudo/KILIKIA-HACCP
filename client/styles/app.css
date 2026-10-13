@@ -240,3 +240,11 @@ a.btn { text-decoration: none; }
 .bell { position: relative; }
 .bell__count { position: absolute; top: -4px; right: -4px; background: var(--danger); color: #fff; border-radius: 999px; font-size: .7rem; padding: 0 5px; line-height: 16px; }
 input[type="date"], input[type="datetime-local"] { font: inherit; padding: 6px 8px; border: 1px solid var(--border); border-radius: var(--radius); max-width: 100%; min-width: 0; }
+
+/* Фаза 5: прослеживаемость */
+.trace-tree { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 16px; align-items: start; margin-top: 12px; }
+.trace-tree__batch { border: 2px solid var(--accent); border-radius: var(--radius); padding: 12px; text-align: center; background: var(--accent-soft); align-self: center; }
+.tree { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.tree ul { padding-left: 16px; margin: 2px 0 0; list-style: '↳ '; }
+.card--bad { border-color: var(--danger); }
+@media (max-width: 819.98px) { .trace-tree { grid-template-columns: minmax(0, 1fr); } }

@@ -9,6 +9,7 @@ import { toCsv, toXlsx } from '../print/tabular';
 import { planPdfContent, planSheets } from './plan/print';
 import { getPlan } from './plan/service';
 import { envSheet, journalPdf, monitoringSheet } from './monitoring/print';
+import { exercisePdf, exerciseSheets } from './trace/print';
 import type { Sheet } from '../print/tabular';
 import type { Actor } from '../core/actor';
 import type { Translator } from '../i18n';
@@ -51,6 +52,20 @@ export const printRoutes: RouteRegistrar = (app, ctx) => {
       if (format === 'xlsx') return send(reply, await toXlsx([sheet]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', `${name}.xlsx`);
       throw badRequest('unknown_format', { format });
     });
+  app.get('/api/trace/exercises/:id/export.:format', { config: { auth: 'a04.module.read' } }, async (req, reply) => {
+    const { id, format } = req.params as { id: string; format: string };
+    const tr = translator(langOf((req.query as { lang?: string }).lang));
+    const db = ctx.store.db;
+    const name = `trace-${id}-${tr.lang}`;
+    if (format === 'pdf') {
+      const { title, content } = exercisePdf(db, id, tr);
+      return send(reply, await renderPdf(tr, meta(tr, title, actorOf(req)), content, false), 'application/pdf', `${name}.pdf`);
+    }
+    const { sheets } = exerciseSheets(db, id, tr);
+    if (format === 'csv') return send(reply, toCsv(sheets, tr.lang), 'text/csv; charset=utf-8', `${name}.csv`);
+    if (format === 'xlsx') return send(reply, await toXlsx(sheets), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', `${name}.xlsx`);
+    throw badRequest('unknown_format', { format });
+  });
   journal('a03.module.read', (tr, f, to) => monitoringSheet(ctx.store.db, tr, f, to), 'monitoring');
   journal('a10.module.read', (tr, f, to) => envSheet(ctx.store.db, tr, f, to), 'env-records');
 };

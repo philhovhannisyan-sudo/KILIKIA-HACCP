@@ -10,6 +10,8 @@ import { PlanPage } from '../modules/a01/PlanPage';
 import { MonitoringPage } from '../modules/a03/MonitoringPage';
 import { EnvPage } from '../modules/a10/EnvPage';
 import { NcRegistry } from '../modules/d04/NcRegistry';
+import { TracePage } from '../modules/a04/TracePage';
+import { ShipmentForm } from '../modules/c03/ShipmentForm';
 
 // Заглушка фазы 1: маршрут, описание будущего наполнения и черновик формы.
 export function ModulePage() {
@@ -21,6 +23,7 @@ export function ModulePage() {
   if (m.code === 'A01') return <PlanPage />;
   if (m.code === 'A03') return <MonitoringPage />;
   if (m.code === 'A10') return <EnvPage />;
+  if (m.code === 'A04') return <TracePage />;
   return <ModuleStub key={m.code} code={m.code} group={m.group} scope={m.scope} />;
 }
 
@@ -49,6 +52,7 @@ function ModuleStub({ code, group, scope }: { code: string; group: string; scope
         <p className="muted">{t('page.stubText', { phase: phaseOf(code) })}</p>
       </section>
       {code === 'D04' && <NcRegistry />}
+      {code === 'C03' && <ShipmentForm />}
       <section className="card">
         <h2>{t('page.formTitle')}</h2>
         <p className="muted">{t('page.formHint')}</p>

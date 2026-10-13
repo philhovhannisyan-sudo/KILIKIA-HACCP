@@ -6,7 +6,7 @@ import { LANGS, LOCALES, formatDate, formatDateTime, formatNumber, type Lang } f
 const DICTS = buildDictionaries(parseGlossary(glossaryCsv));
 const STORAGE_KEY = 'haccp.lang';
 
-export type TKey = DictKey | `term.${string}` | `module.${string}` | `group.${string}` | `lang.${string}` | `role.${string}` | `error.${string}` | `status.${string}` | `deadline.${string}` | `hazard.${string}` | `tree.${string}` | `oprp.${string}` | `plan.${string}` | `wizard.${string}` | `export.${string}` | `mon.${string}` | `env.${string}` | `nc.${string}` | `note.${string}`;
+export type TKey = DictKey | `term.${string}` | `module.${string}` | `group.${string}` | `lang.${string}` | `role.${string}` | `error.${string}` | `status.${string}` | `deadline.${string}` | `hazard.${string}` | `tree.${string}` | `oprp.${string}` | `plan.${string}` | `wizard.${string}` | `export.${string}` | `mon.${string}` | `env.${string}` | `nc.${string}` | `note.${string}` | `trace.${string}` | `ship.${string}` | `unit.${string}`;
 
 interface I18nValue {
   lang: Lang;

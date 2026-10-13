@@ -14,6 +14,7 @@ import { haccpRoutes } from './modules/haccp';
 import { planRoutes } from './modules/plan/routes';
 import { printRoutes } from './modules/print';
 import { monitoringRoutes } from './modules/monitoring/routes';
+import { traceRoutes } from './modules/trace/routes';
 
 const DIST = fileURLToPath(new URL('../dist', import.meta.url));
 
@@ -71,6 +72,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance & { ct
   planRoutes(app, ctx);
   printRoutes(app, ctx);
   monitoringRoutes(app, ctx);
+  traceRoutes(app, ctx);
 
   if (opts.serveClient !== false && existsSync(DIST)) {
     await app.register(fastifyStatic, { root: DIST, wildcard: false });
