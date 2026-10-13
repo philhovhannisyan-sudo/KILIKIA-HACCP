@@ -7,20 +7,24 @@ test.describe('K5 панель готовности на демо-данных',
     expect(stats.material_lot).toBeGreaterThanOrEqual(8);
     expect(stats.monitoring_record).toBeGreaterThanOrEqual(6);
     expect([stats.ccp, stats.oprp, stats.nonconformity, stats.capa]).toEqual([2, 1, 3, 2]);
-    const api = await (await page.request.get('/api/dashboard')).json();
-
+    // Другие тесты параллельно меняют данные (карантин, НС) — сверка повторяется до совпадения
     await page.goto('/');
-    await expect(page.getByTestId('kpi-readiness-value')).toHaveText(`${api.readiness.percent} %`);
-    await expect(page.getByTestId('kpi-capa-value')).toHaveText(String(api.openCapa.count));
-    await expect(page.getByTestId('kpi-calibration-value')).toHaveText(String(api.overdueCalibration.count));
-    await expect(page.getByTestId('kpi-quarantine-value')).toHaveText(String(api.quarantine.count));
+    let api: Record<string, any> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
+    await expect(async () => {
+      await page.reload();
+      api = await (await page.request.get('/api/dashboard')).json();
+      await expect(page.getByTestId('kpi-readiness-value')).toHaveText(`${api.readiness.percent} %`, { timeout: 2000 });
+      await expect(page.getByTestId('kpi-capa-value')).toHaveText(String(api.openCapa.count), { timeout: 2000 });
+      await expect(page.getByTestId('kpi-calibration-value')).toHaveText(String(api.overdueCalibration.count), { timeout: 2000 });
+      await expect(page.getByTestId('kpi-quarantine-value')).toHaveText(String(api.quarantine.count), { timeout: 2000 });
+      await expect(page.getByTestId('clauses').locator('tr[data-covered="true"]')).toHaveCount(api.readiness.covered, { timeout: 2000 });
+    }).toPass({ timeout: 20_000 });
     await expect(page.getByTestId('list-calibration')).toContainText('P-01');
     await expect(page.getByTestId('list-quarantine')).toContainText('B-STR-04');
     await expect(page.getByTestId('list-capa').locator('.item--overdue')).toHaveCount(api.openCapa.overdue);
     await expect(page.getByTestId('list-deviations')).toContainText('NC-001');
     await expect(page.getByTestId('list-deviations')).toContainText('ККТ-1');
     await expect(page.getByTestId('clauses').locator('tbody tr')).toHaveCount(api.readiness.total);
-    await expect(page.getByTestId('clauses').locator('tr[data-covered="true"]')).toHaveCount(api.readiness.covered);
     await page.screenshot({ path: 'docs/evidence/phase2-K05-dashboard.png', fullPage: true });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.getByTestId('lang-select').selectOption('hy');

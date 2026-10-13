@@ -9,6 +9,7 @@ import { ulid } from '../core/ids';
 import { parseDecimal } from '../../shared/number';
 import { FSM_ENTITIES, type FsmEntity } from '../../shared/fsm';
 import { registerDeviation } from './monitoring/deviation';
+import { monitoringJournal } from '../queries/journals';
 
 const num = (v: unknown): number | null => {
   if (v === null || v === undefined || v === '') return null;
@@ -65,7 +66,11 @@ export const haccpRoutes: RouteRegistrar = (app, ctx) => {
 
   const recordWithCorrections = (id: string) => {
     const d = db();
-    const r = d.prepare('SELECT * FROM monitoring_record WHERE id = ?').get(id) as Record<string, unknown> | undefined;
+    const r = d.prepare(`SELECT r.*, cp.code AS cp_code, cp.type AS cp_type, pr.code AS param_code, pr.name_i18n AS param_name, pr.unit, pr.kind,
+        b.code AS batch_code, e.code AS equipment_code, n.code AS nc_code
+      FROM monitoring_record r JOIN control_point cp ON cp.id = r.control_point_id JOIN control_parameter pr ON pr.id = r.parameter_id
+      JOIN fg_batch b ON b.id = r.fg_batch_id LEFT JOIN equipment e ON e.id = r.equipment_id LEFT JOIN nonconformity n ON n.id = r.nc_id
+      WHERE r.id = ?`).get(id) as Record<string, unknown> | undefined;
     if (!r) throw notFound('monitoring_record', id);
     const corrections = d.prepare('SELECT * FROM monitoring_correction WHERE original_id = ? ORDER BY at').all(id) as Record<string, unknown>[];
     const last = corrections[corrections.length - 1];
@@ -76,8 +81,10 @@ export const haccpRoutes: RouteRegistrar = (app, ctx) => {
     };
   };
 
-  app.get('/api/monitoring', { config: { auth: 'a03.module.read' } }, async () =>
-    (db().prepare('SELECT id FROM monitoring_record ORDER BY event_at DESC').pluck().all() as string[]).map(recordWithCorrections));
+  app.get('/api/monitoring', { config: { auth: 'a03.module.read' } }, async (req) => {
+    const q = req.query as { from?: string; to?: string };
+    return monitoringJournal(db(), q.from, q.to);
+  });
   app.get('/api/monitoring/:id', { config: { auth: 'a03.module.read' } }, async (req) => recordWithCorrections((req.params as { id: string }).id));
 
   // Исправление записи мониторинга — только записью-корректировкой (К10, Р-11)

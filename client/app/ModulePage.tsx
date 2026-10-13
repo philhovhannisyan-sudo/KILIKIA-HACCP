@@ -7,7 +7,9 @@ import { NumberInput } from '../components/NumberInput';
 import { phaseOf } from './phases';
 import { useAuth } from '../auth/AuthProvider';
 import { PlanPage } from '../modules/a01/PlanPage';
-import { ControlPointRegistry } from '../modules/a03/Registry';
+import { MonitoringPage } from '../modules/a03/MonitoringPage';
+import { EnvPage } from '../modules/a10/EnvPage';
+import { NcRegistry } from '../modules/d04/NcRegistry';
 
 // Заглушка фазы 1: маршрут, описание будущего наполнения и черновик формы.
 export function ModulePage() {
@@ -17,6 +19,8 @@ export function ModulePage() {
   if (!m) return <NotFound />;
   if (!can(`${m.code.toLowerCase()}.module.read`)) return <AccessDenied code={m.code} />;
   if (m.code === 'A01') return <PlanPage />;
+  if (m.code === 'A03') return <MonitoringPage />;
+  if (m.code === 'A10') return <EnvPage />;
   return <ModuleStub key={m.code} code={m.code} group={m.group} scope={m.scope} />;
 }
 
@@ -44,7 +48,7 @@ function ModuleStub({ code, group, scope }: { code: string; group: string; scope
         <p>{t(`module.${code}.summary`)}</p>
         <p className="muted">{t('page.stubText', { phase: phaseOf(code) })}</p>
       </section>
-      {code === 'A03' && <ControlPointRegistry />}
+      {code === 'D04' && <NcRegistry />}
       <section className="card">
         <h2>{t('page.formTitle')}</h2>
         <p className="muted">{t('page.formHint')}</p>

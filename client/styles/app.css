@@ -223,3 +223,20 @@ a.btn { text-decoration: none; }
 .result--OPRP { background: var(--warn-soft); color: var(--warn); }
 .result--PRP { background: var(--accent-soft); color: var(--accent); }
 .result--needs_change, .result--pending { background: #eceff1; color: var(--muted); }
+
+/* Фаза 4: мониторинг, среда, графики */
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.charts h3 { font-size: .95rem; }
+.chart { margin: 0; }
+.chart svg { width: 100%; height: 200px; display: block; }
+.chart__grid { stroke: var(--border); stroke-width: 1; }
+.chart__limit { stroke: var(--danger); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.chart__line { fill: none; stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.chart__dot { fill: var(--accent); }
+.chart__dot--bad { fill: var(--danger); }
+.chart__axis { font-size: 11px; fill: var(--muted); }
+.row--bad td { background: #fff5f4; }
+.field__hint { font-size: .8rem; }
+.bell { position: relative; }
+.bell__count { position: absolute; top: -4px; right: -4px; background: var(--danger); color: #fff; border-radius: 999px; font-size: .7rem; padding: 0 5px; line-height: 16px; }
+input[type="date"], input[type="datetime-local"] { font: inherit; padding: 6px 8px; border: 1px solid var(--border); border-radius: var(--radius); max-width: 100%; min-width: 0; }

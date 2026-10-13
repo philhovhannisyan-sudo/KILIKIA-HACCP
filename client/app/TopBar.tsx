@@ -10,6 +10,7 @@ import { useToast } from '../components/Toast';
 import { ActionButton, Can } from '../components/Can';
 import { LangSelect } from '../components/LangSelect';
 import { emitDataChanged } from '../dataEvents';
+import { NotificationsButton } from './Notifications';
 
 export function TopBar() {
   const { t, fmtDateTime } = useI18n();
@@ -41,6 +42,7 @@ export function TopBar() {
             <span data-testid="user-name">{me.fullName}</span> · <span className="muted" data-testid="user-roles">{roles}</span>
           </span>
         </button>
+        <NotificationsButton />
         <ResetButton />
         <button type="button" className="icon-btn" onClick={() => void logout()} aria-label={t('top.logout')} title={t('top.logout')} data-testid="logout">
           <LogOut size={18} aria-hidden />
