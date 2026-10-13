@@ -12,7 +12,7 @@ export default defineConfig({
   webServer: {
     command: 'node scripts/start.mjs',
     url: `http://localhost:${PORT}/api/health`,
-    env: { PORT: String(PORT) },
+    env: { PORT: String(PORT), HACCP_DATA_DIR: '.e2e-data', HACCP_FRESH: '1', HACCP_TEST_MODE: '1' },
     reuseExistingServer: false,
     timeout: 180_000,
   },

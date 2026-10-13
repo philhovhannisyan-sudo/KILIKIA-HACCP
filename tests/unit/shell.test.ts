@@ -32,5 +32,6 @@ describe('Разбор чисел и форматирование по лока�
     expect(formatNumber(85.5, 'ru')).toBe('85,5');
     expect(formatNumber(85.5, 'en')).toBe('85.5');
     expect(formatNumber(85.5, 'hy')).toBe('85,5');
+    expect(formatDateTime(d, 'hy')).toBe('13 հոկտեմբերի 2026 թ., 12:30');
   });
 });

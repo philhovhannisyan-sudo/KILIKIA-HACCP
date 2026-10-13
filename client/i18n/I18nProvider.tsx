@@ -6,13 +6,16 @@ import { LANGS, LOCALES, formatDate, formatDateTime, formatNumber, type Lang } f
 const DICTS = buildDictionaries(parseGlossary(glossaryCsv));
 const STORAGE_KEY = 'haccp.lang';
 
-export type TKey = DictKey | `term.${string}` | `module.${string}` | `group.${string}` | `lang.${string}`;
+export type TKey = DictKey | `term.${string}` | `module.${string}` | `group.${string}` | `lang.${string}` | `role.${string}` | `error.${string}` | `status.${string}` | `deadline.${string}`;
 
 interface I18nValue {
   lang: Lang;
   locale: string;
   setLang: (l: Lang) => void;
   t: (key: TKey, params?: Record<string, string | number>) => string;
+  has: (key: string) => boolean;
+  /** Значение из поля *_i18n справочника на текущем языке */
+  l: (value: Record<string, string> | string | null | undefined) => string;
   fmtDateTime: (d: Date) => string;
   fmtDate: (d: Date) => string;
   fmtNumber: (n: number) => string;
@@ -59,6 +62,12 @@ export function I18nProvider({ children }: { children: ReactNode }) {
           return key;
         }
         return interpolate(v, params);
+      },
+      has: (key) => key in dict,
+      l: (value) => {
+        if (!value) return '';
+        const obj = typeof value === 'string' ? (JSON.parse(value) as Record<string, string>) : value;
+        return obj[lang] ?? obj.ru ?? '';
       },
       fmtDateTime: (d) => formatDateTime(d, lang),
       fmtDate: (d) => formatDate(d, lang),
