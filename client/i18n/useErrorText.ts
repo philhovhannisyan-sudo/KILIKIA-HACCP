@@ -1,10 +1,11 @@
+import { useCallback } from 'react';
 import { ApiError } from '../api';
 import { useI18n, type TKey } from './I18nProvider';
 
 /** Локализованный текст ошибки сервера: ключ `error.<code>` с параметрами, иначе общий текст. */
 export function useErrorText() {
   const { t, has } = useI18n();
-  return (e: unknown): string => {
+  return useCallback((e: unknown): string => {
     if (e instanceof ApiError) {
       const key = `error.${e.code}` as TKey;
       const fmt = (v: unknown): string => {
@@ -16,5 +17,5 @@ export function useErrorText() {
       return t('error.generic', { message: e.message });
     }
     return t('error.network');
-  };
+  }, [t, has]);
 }

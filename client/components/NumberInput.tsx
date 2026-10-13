@@ -9,9 +9,10 @@ interface Props {
   value: string;
   onChange: (raw: string, parsed: number | null) => void;
   name?: string;
+  disabled?: boolean;
 }
 
-export function NumberInput({ label, value, onChange, name }: Props) {
+export function NumberInput({ label, value, onChange, name, disabled }: Props) {
   const { t } = useI18n();
   const id = useId();
   const invalid = value.trim() !== '' && parseDecimal(value) === null;
@@ -24,6 +25,7 @@ export function NumberInput({ label, value, onChange, name }: Props) {
         inputMode="decimal"
         autoComplete="off"
         value={value}
+        disabled={disabled}
         aria-invalid={invalid}
         aria-describedby={invalid ? `${id}-err` : undefined}
         onChange={(e) => onChange(e.target.value, parseDecimal(e.target.value))}

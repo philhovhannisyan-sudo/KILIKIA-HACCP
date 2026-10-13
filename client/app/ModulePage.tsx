@@ -5,12 +5,18 @@ import { findModule } from '../../shared/modules';
 import { useI18n } from '../i18n/I18nProvider';
 import { NumberInput } from '../components/NumberInput';
 import { phaseOf } from './phases';
+import { useAuth } from '../auth/AuthProvider';
+import { PlanPage } from '../modules/a01/PlanPage';
+import { ControlPointRegistry } from '../modules/a03/Registry';
 
 // Заглушка фазы 1: маршрут, описание будущего наполнения и черновик формы.
 export function ModulePage() {
   const { code = '' } = useParams();
+  const { can } = useAuth();
   const m = findModule(code);
   if (!m) return <NotFound />;
+  if (!can(`${m.code.toLowerCase()}.module.read`)) return <AccessDenied code={m.code} />;
+  if (m.code === 'A01') return <PlanPage />;
   return <ModuleStub key={m.code} code={m.code} group={m.group} scope={m.scope} />;
 }
 
@@ -38,6 +44,7 @@ function ModuleStub({ code, group, scope }: { code: string; group: string; scope
         <p>{t(`module.${code}.summary`)}</p>
         <p className="muted">{t('page.stubText', { phase: phaseOf(code) })}</p>
       </section>
+      {code === 'A03' && <ControlPointRegistry />}
       <section className="card">
         <h2>{t('page.formTitle')}</h2>
         <p className="muted">{t('page.formHint')}</p>
@@ -52,6 +59,16 @@ function ModuleStub({ code, group, scope }: { code: string; group: string; scope
           </p>
         </form>
       </section>
+    </div>
+  );
+}
+
+function AccessDenied({ code }: { code: string }) {
+  const { t } = useI18n();
+  return (
+    <div className="page" data-testid={`page-${code}`}>
+      <h1><span className="code">{code}</span> {t(`module.${code}.title`)}</h1>
+      <p className="tag tag--danger" data-testid="access-denied">{t('error.forbidden', { permission: `${code.toLowerCase()}.module.read` })}</p>
     </div>
   );
 }

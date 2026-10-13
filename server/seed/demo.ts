@@ -243,7 +243,11 @@ export function seedDemo(db: DB, today: string, roleIds: Record<string, string>)
     ]);
   insert(db, 'oprp_assessment', {
     hazard_id: hOprp, result: 'OPRP', justification: 'Brix и pH — критерии действия, а не критические пределы',
-    criteria: JSON.stringify({ 1: ['yes', 'Возможна ошибка дозирования сахара'], 2: ['yes', 'Порча продукта в обращении'], 3: ['yes', 'Мера снижает вероятность роста'], 4: ['no', 'Не влияет на другие меры'], 5: ['no', 'Пределы — критерии действия'] }),
+    criteria: JSON.stringify({
+      1: { answer: 'yes', justification: 'Возможна ошибка дозирования сахара' }, 2: { answer: 'yes', justification: 'Порча продукта в обращении' },
+      3: { answer: 'yes', justification: 'Мера снижает вероятность роста' }, 4: { answer: 'no', justification: 'Не влияет на другие меры' },
+      5: { answer: 'no', justification: 'Пределы — критерии действия, а не критические пределы' },
+    }),
   });
   const hCcp1 = hazard(5, 'bio', ['Выживание микроорганизмов в таре при недостаточной температуре розлива', 'Survival of microorganisms in containers at insufficient filling temperature', 'Միկրոօրգանիզմների գոյատևում տարայում լցման անբավարար ջերմաստիճանի դեպքում'], 2, 3,
     ['Горячий розлив при T ≥ 85 °C', 'Hot fill at T ≥ 85 °C', 'Տաք լցում T ≥ 85 °C-ում'], 'CCP', [

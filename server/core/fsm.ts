@@ -4,6 +4,7 @@ import type { Actor } from './actor';
 import { appendAudit } from './audit';
 import { AppError, badRequest, conflict, notFound, unprocessable } from './errors';
 import { GUARDS } from './guards';
+import { AFTER_TRANSITION } from './hooks';
 
 // Движок конечных автоматов (brief §9): переходы читаются из таблицы fsm_transition.
 export interface TransitionRow {
@@ -52,5 +53,6 @@ export function transition(db: DB, actor: Actor, entity: FsmEntity, id: string, 
     module: def.module, objectType: entity, objectId: id, action: 'transition',
     before: { status: row.status }, after: { status: to }, comment,
   });
+  AFTER_TRANSITION[`${entity}:${to}`]?.(db, actor, id);
   return to;
 }

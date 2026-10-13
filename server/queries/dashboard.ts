@@ -7,7 +7,8 @@ const one = (db: DB, sql: string, ...a: unknown[]) => db.prepare(sql).pluck().ge
 
 /** Правила зачёта пунктов (regulatory-refs.md §5, DEMO). Возвращает true, если пункт покрыт на дату `today`. */
 export const READINESS_RULES: Record<string, (db: DB, today: string) => boolean> = {
-  approved_haccp_plan: (db) => one(db, "SELECT count(*) FROM haccp_plan WHERE status = 'approved'") > 0,
+  // Действующий план: утверждённый или утверждённый и находящийся на пересмотре (до утверждения новой версии)
+  approved_haccp_plan: (db) => one(db, "SELECT count(*) FROM haccp_plan WHERE status IN ('approved','under_revision')") > 0,
   current_document: (db) => one(db, "SELECT count(*) FROM document WHERE status = 'current'") > 0,
   prp_checked_on_time: (db, today) =>
     one(db, "SELECT count(*) FROM prp WHERE status = 'active' AND (last_checked_date IS NULL OR date(last_checked_date, '+' || frequency_days || ' days') < ?)", today) === 0
@@ -15,7 +16,7 @@ export const READINESS_RULES: Record<string, (db: DB, today: string) => boolean>
   trace_test_12m: (db, today) =>
     one(db, 'SELECT count(*) FROM trace_exercise WHERE finished_at IS NOT NULL AND substr(started_at, 1, 10) >= ?', addDays(today, -365)) > 0,
   approved_plan_with_hazards: (db) =>
-    one(db, "SELECT count(*) FROM haccp_plan p WHERE p.status = 'approved' AND EXISTS (SELECT 1 FROM hazard h WHERE h.plan_id = p.id)") > 0,
+    one(db, "SELECT count(*) FROM haccp_plan p WHERE p.status IN ('approved','under_revision') AND EXISTS (SELECT 1 FROM hazard h WHERE h.plan_id = p.id)") > 0,
   no_overdue_calibration: (db, today) => overdueCalibration(db, today).length === 0,
   verification_30d: (db, today) => {
     const from = addDays(today, -Number(setting(db, 'verification_window_days')));

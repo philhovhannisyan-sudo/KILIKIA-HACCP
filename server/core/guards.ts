@@ -1,4 +1,5 @@
 import type { DB } from '../db/connection';
+import { completeness } from '../modules/plan/service';
 
 // Проверки-условия переходов. Возвращают null, если условие выполнено, иначе — параметры для сообщения.
 type Guard = (db: DB, entity: string, id: string) => Record<string, unknown> | null;
@@ -33,8 +34,12 @@ export const GUARDS: Record<string, Guard> = {
   batchHasConsumption: (db, entity, id) =>
     entity !== 'fg_batch' || one(db, 'SELECT count(*) FROM batch_consumption WHERE fg_batch_id = ?', id) ? null : {},
   // Полные условия появятся вместе с мастером A01 (фаза 3)
-  planReadyForApproval: (db, _e, id) =>
-    one(db, 'SELECT count(*) FROM hazard WHERE plan_id = ?', id) ? null : { missing: 'hazards' },
+  // Все 7 экранов мастера заполнены, нет опасностей без результата или с «требуется изменение»
+  planReadyForApproval: (db, _e, id) => {
+    const c = completeness(db, id);
+    const missing = Object.entries(c).filter(([, ok]) => !ok).map(([s]) => Number(s));
+    return missing.length ? { screens: missing } : null;
+  },
   planNewVersionApproved: (db, _e, id) =>
     one(db, `SELECT count(*) FROM haccp_plan p JOIN haccp_plan o ON o.lineage_id = p.lineage_id
              WHERE o.id = ? AND p.version > o.version AND p.status = 'approved'`, id) ? null : {},

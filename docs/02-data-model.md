@@ -484,6 +484,8 @@
 | criteria | TEXT | да |  |
 | justification | TEXT |  |  |
 | result | TEXT |  |  |
+| override_candidate | INTEGER | да |  |
+| override_by | TEXT |  | → user |
 
 Уникальность: (hazard_id).
 
