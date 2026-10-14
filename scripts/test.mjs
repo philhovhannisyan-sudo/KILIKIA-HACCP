@@ -1,4 +1,4 @@
-// `npm test`: типы → линтер → unit (Vitest) → e2e (Playwright) → docs/03-acceptance.md.
+// `npm test`: типы → линтер → unit (Vitest) → e2e (Playwright) → чистая копия (К26) → docs/03-acceptance.md.
 // Все шаги выполняются даже при падении предыдущего, чтобы отчёт был полным; код выхода — общий.
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -10,6 +10,7 @@ const steps = [
   ['lint', 'npx', ['eslint', 'client', 'shared', 'server', 'tests', 'scripts']],
   ['unit', 'npx', ['vitest', 'run']],
   ['e2e', 'npx', ['playwright', 'test']],
+  ['clean-clone', process.execPath, ['scripts/clean-clone.mjs']],
   ['acceptance', process.execPath, ['scripts/acceptance-report.mjs']],
 ];
 const failed = [];

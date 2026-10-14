@@ -33,7 +33,7 @@ const CRITERIA = {
 
 // Что критерий пока проверяет не полностью (docs/01-plan.md §4)
 const PARTIAL = {
-  2: 'печатные формы каркасов проверены на ru; сверка печатных форм всех модулей на en/hy — К26, фаза 9',
+  2: 'печатные формы всех модулей проверены на ru и hy (К26); на en — только план ХАССП',
 };
 
 const results = {}; // code -> [{title, status, duration, error, kind}]
@@ -60,6 +60,15 @@ if (existsSync('reports/playwright.json')) {
       }
   };
   for (const s of p.suites ?? []) walk(s);
+}
+
+// К26: проверка чистой копии (scripts/clean-clone.mjs)
+if (existsSync('reports/clean-clone.json'))
+  for (const r of JSON.parse(readFileSync('reports/clean-clone.json', 'utf8')).results) add(r.title, r.status, r.duration, r.error ?? '', 'clean-clone');
+// К26: ловушка консоли и внешних запросов стоит в фикстуре каждого e2e-теста — критерий требует зелёного всего прогона
+{
+  const e2e = Object.values(results).flat().filter((r) => r.kind === 'e2e');
+  if (e2e.length) add(`K26 консоль браузера без ошибок на всём e2e-прогоне (${e2e.length} тестов)`, e2e.every((r) => r.status === 'passed') ? 'passed' : 'failed', 0, '', 'e2e');
 }
 
 const evidence = existsSync('docs/evidence') ? readdirSync('docs/evidence') : [];

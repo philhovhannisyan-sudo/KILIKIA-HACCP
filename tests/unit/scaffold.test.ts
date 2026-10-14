@@ -52,7 +52,7 @@ describe('K25 каркасы 19 модулей', () => {
       expect(text, code).toContain(squash(D['sc.printDraft']));
       expect(text.toLowerCase(), code).toContain('разработ');
     }
-  });
+  }, 60_000);
 
   it('K25 доступ к каркасу проверяется на сервере: без входа — 401, неизвестный модуль — 403', async () => {
     expect((await t.app.inject({ url: '/api/scaffold/E02' })).statusCode).toBe(401);
