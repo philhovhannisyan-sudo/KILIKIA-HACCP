@@ -5,7 +5,8 @@ import { clock } from '../../core/clock';
 import { badRequest, conflict, notFound, unprocessable } from '../../core/errors';
 import { ulid } from '../../core/ids';
 import { parseDecimal } from '../../../shared/number';
-import { exerciseList, exerciseReport, traceBatch } from '../../queries/trace';
+import { exerciseReport, traceBatch } from '../../queries/trace';
+import { exercisesInPeriod } from '../../queries/period';
 import { nextCode, registerDeviation } from '../monitoring/deviation';
 
 const setting = (db: import('../../db/connection').DB, key: string) => JSON.parse(db.prepare('SELECT value FROM setting WHERE key = ?').pluck().get(key) as string);
@@ -14,7 +15,10 @@ export const traceRoutes: RouteRegistrar = (app, ctx) => {
   const db = () => ctx.store.db;
 
   app.get('/api/trace/batches/:id', { config: { auth: 'a04.module.read' } }, async (req) => traceBatch(db(), (req.params as { id: string }).id));
-  app.get('/api/trace/exercises', { config: { auth: 'a04.module.read' } }, async () => exerciseList(db()));
+  app.get('/api/trace/exercises', { config: { auth: 'a04.module.read' } }, async (req) => {
+    const q = req.query as { from?: string; to?: string };
+    return exercisesInPeriod(db(), q.from, q.to);
+  });
   app.get('/api/trace/exercises/:id', { config: { auth: 'a04.module.read' } }, async (req) => exerciseReport(db(), (req.params as { id: string }).id));
 
   // Старт теста прослеживаемости или тестового отзыва: таймер на сервере, целевое время — снимок настройки (DEMO 4 ч)

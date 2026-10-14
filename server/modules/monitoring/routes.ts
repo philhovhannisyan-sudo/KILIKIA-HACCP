@@ -8,6 +8,7 @@ import { can } from '../../core/rbac';
 import { ulid } from '../../core/ids';
 import { parseDecimal } from '../../../shared/number';
 import { registerDeviation } from './deviation';
+import { nonconformitiesInPeriod } from '../../queries/period';
 
 const num = (v: unknown): number | null => {
   if (v === null || v === undefined || v === '') return null;
@@ -142,9 +143,10 @@ export const monitoringRoutes: RouteRegistrar = (app, ctx) => {
   });
 
   // Минимальный реестр несоответствий D04 (полный модуль — фаза 6)
-  app.get('/api/nonconformities', { config: { auth: 'd04.module.read' } }, async () =>
-    db().prepare(`SELECT n.*, b.code AS batch_code, m.code AS lot_code FROM nonconformity n LEFT JOIN fg_batch b ON b.id = n.fg_batch_id
-      LEFT JOIN material_lot m ON m.id = n.material_lot_id ORDER BY n.registered_at DESC`).all());
+  app.get('/api/nonconformities', { config: { auth: 'd04.module.read' } }, async (req) => {
+    const q = req.query as { from?: string; to?: string };
+    return nonconformitiesInPeriod(db(), q.from, q.to);
+  });
 
   app.get('/api/notifications', { config: { auth: 'user' } }, async (req) => {
     const a = actorOf(req);

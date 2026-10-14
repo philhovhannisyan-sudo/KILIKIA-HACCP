@@ -11,6 +11,7 @@ import { MonitoringPage } from '../modules/a03/MonitoringPage';
 import { EnvPage } from '../modules/a10/EnvPage';
 import { NcPage } from '../modules/d04/NcPage';
 import { PrpPage } from '../modules/a02/PrpPage';
+import { ReportsPage } from '../modules/e01/ReportsPage';
 import { TracePage } from '../modules/a04/TracePage';
 import { ShipmentForm } from '../modules/c03/ShipmentForm';
 
@@ -27,6 +28,7 @@ export function ModulePage() {
   if (m.code === 'A04') return <TracePage />;
   if (m.code === 'A02') return <PrpPage />;
   if (m.code === 'D04') return <NcPage />;
+  if (m.code === 'E01') return <ReportsPage />;
   return <ModuleStub key={m.code} code={m.code} group={m.group} scope={m.scope} />;
 }
 

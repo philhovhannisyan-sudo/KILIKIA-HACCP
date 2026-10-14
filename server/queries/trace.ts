@@ -43,7 +43,3 @@ export function exerciseReport(db: DB, id: string): Row {
     returnedPercent: shipped ? Math.round((returned / shipped) * 1000) / 10 : null,
   };
 }
-
-export function exerciseList(db: DB) {
-  return (db.prepare('SELECT id FROM trace_exercise ORDER BY started_at DESC').pluck().all() as string[]).map((id) => exerciseReport(db, id));
-}

@@ -2,7 +2,7 @@ import { test, expect } from '../fixtures/test';
 import { MODULES, modulePath } from '../../shared/modules';
 
 // Модули, уже реализованные полностью: у них нет пометки «заглушка», у остальных она обязательна
-const IMPLEMENTED = new Set(['A01', 'A02', 'A03', 'A04', 'A10', 'D04']);
+const IMPLEMENTED = new Set(['A01', 'A02', 'A03', 'A04', 'A10', 'D04', 'E01']);
 
 test.describe('K1 Все 26 маршрутов открываются без ошибок и пустых экранов', () => {
   test('K1 главная и 26 модулей', async ({ page }) => {
