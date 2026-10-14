@@ -425,7 +425,7 @@ export function seedDemo(db: DB, today: string, roleIds: Record<string, string>)
   const scaffold = (module: string, day: number, data: Record<string, unknown>) => insert(db, 'scaffold_record', { module, record_date: d(day), data: JSON.stringify(data) });
   scaffold('D08', -90, { code: 'MR-001', title: L('Анализ со стороны руководства за полугодие', 'Half-year management review', 'Ղեկավարության կիսամյակային վերլուծություն'), status: 'completed' });
   scaffold('A05', -1, { code: 'SAN-001', area: L('Линия фасовки №1', 'Filling line No. 1', 'Լցման գիծ №1'), method: 'CIP', atp: 85, result: 'ok' });
-  scaffold('A05', -2, { code: 'SAN-002', area: L('Варочный котёл', 'Cooking kettle', 'Եփման կաթսա'), method: 'COP', atp: 120, result: 'ok' });
+  scaffold('A05', -2, { code: 'SAN-002', area: L('Варочный котёл', 'Cooking kettle', 'Եփման կաթսա'), method: 'COP', atp: 120, result: 'nok' });
   scaffold('A06', -12, { code: 'PC-001', point: 'R-05', activity: 0, contractor: 'DEMO «Дезсервис»' });
   scaffold('A06', -42, { code: 'PC-002', point: 'R-11', activity: 1, contractor: 'DEMO «Дезсервис»' });
   scaffold('A07', -30, { code: 'TRN-001', topic: L('Принципы ХАССП', 'HACCP principles', 'HACCP սկզբունքներ'), attendees: 12 });

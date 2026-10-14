@@ -82,10 +82,26 @@ function ResetButton() {
 function AccountPanel() {
   const { t } = useI18n();
   const { me } = useAuth();
+  if (!me) return null;
+
+  return (
+    <div className="account">
+      <dl className="facts">
+        <div><dt>{t('top.user')}</dt><dd>{me.fullName}</dd></div>
+        <div><dt>{t('top.loginName')}</dt><dd className="code">{me.login}</dd></div>
+        <div><dt>{t('top.roles')}</dt><dd>{me.roles.map((r) => t(`role.${r}`)).join(', ')}</dd></div>
+      </dl>
+      <BackupControls />
+    </div>
+  );
+}
+
+/** Экспорт и импорт состояния (бэкап); используется в панели учётной записи и в E02. */
+export function BackupControls({ idPrefix = '' }: { idPrefix?: string }) {
+  const { t } = useI18n();
   const toast = useToast();
   const errorText = useErrorText();
   const fileRef = useRef<HTMLInputElement>(null);
-  if (!me) return null;
 
   const doExport = async () => {
     try {
@@ -110,26 +126,19 @@ function AccountPanel() {
   };
 
   return (
-    <div className="account">
-      <dl className="facts">
-        <div><dt>{t('top.user')}</dt><dd>{me.fullName}</dd></div>
-        <div><dt>{t('top.loginName')}</dt><dd className="code">{me.login}</dd></div>
-        <div><dt>{t('top.roles')}</dt><dd>{me.roles.map((r) => t(`role.${r}`)).join(', ')}</dd></div>
-      </dl>
-      <Can permission="system.backup.export">
-        <h3>{t('top.backupTitle')}</h3>
-        <p className="muted">{t('top.backupHint')}</p>
-        <div className="form">
-          <ActionButton permission="system.backup.export" onClick={() => void doExport()} data-testid="export"><Download size={16} aria-hidden /> {t('top.export')}</ActionButton>
-          <Can permission="system.backup.import">
-            <div className="field">
-              <label htmlFor="import-file">{t('top.importFile')}</label>
-              <input id="import-file" type="file" accept=".gz,.json,application/gzip,application/json" ref={fileRef} />
-            </div>
-            <ActionButton permission="system.backup.import" onClick={() => void doImport()} data-testid="import"><Upload size={16} aria-hidden /> {t('top.import')}</ActionButton>
-          </Can>
-        </div>
-      </Can>
-    </div>
+    <Can permission="system.backup.export">
+      <h3>{t('top.backupTitle')}</h3>
+      <p className="muted">{t('top.backupHint')}</p>
+      <div className="form">
+        <ActionButton permission="system.backup.export" onClick={() => void doExport()} data-testid={`${idPrefix}export`}><Download size={16} aria-hidden /> {t('top.export')}</ActionButton>
+        <Can permission="system.backup.import">
+          <div className="field">
+            <label htmlFor={`${idPrefix}import-file`}>{t('top.importFile')}</label>
+            <input id={`${idPrefix}import-file`} type="file" accept=".gz,.json,application/gzip,application/json" ref={fileRef} />
+          </div>
+          <ActionButton permission="system.backup.import" onClick={() => void doImport()} data-testid={`${idPrefix}import`}><Upload size={16} aria-hidden /> {t('top.import')}</ActionButton>
+        </Can>
+      </div>
+    </Can>
   );
 }

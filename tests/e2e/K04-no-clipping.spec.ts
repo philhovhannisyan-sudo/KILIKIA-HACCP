@@ -35,6 +35,7 @@ for (const width of [390, 1280]) {
       for (const route of ROUTES) {
         await page.goto(route);
         await page.locator('main h1').waitFor();
+      await page.waitForLoadState('networkidle'); // каркасы дорисовывают панель и таблицу после загрузки данных
         for (const p of await page.evaluate(CHECK)) bad.push(`${route}: ${p}`);
       }
       if (lang === 'hy') await page.screenshot({ path: `docs/evidence/phase1-K04-${width}-hy.png` });

@@ -13,18 +13,18 @@ test.describe('K2 Переключение ru → en → hy без переза�
     expect(glossary.length).toBeGreaterThan(0);
     await page.goto('/m/a05');
     await page.evaluate(() => ((window as unknown as { __noReload: boolean }).__noReload = true));
-    await page.getByLabel(ru['form.comment']).fill('Проверка ввода');
-    await page.getByLabel(ru['form.value']).fill('85,5');
-    await expect(page.getByTestId('parsed')).toHaveAttribute('data-value', '85.5');
+    await page.getByLabel(ru['sc.col.area'], { exact: true }).fill('Проверка ввода');
+    await page.getByLabel(ru['sc.col.atp'], { exact: true }).fill('85,5');
+    await expect(page.getByLabel(ru['sc.col.atp'], { exact: true })).toHaveAttribute('aria-invalid', 'false');
 
     for (const lang of ['en', 'hy', 'ru'] as const) {
       await page.getByTestId('lang-select').selectOption(lang);
       await expect(page.locator('html')).toHaveAttribute('lang', lang);
       await expect(page.locator('h1')).toContainText(title(lang, 'A05'));
       await expect(page.getByTestId('nav-A07')).toContainText(title(lang, 'A07'));
-      await expect(page.getByLabel(D[lang]['form.comment'])).toHaveValue('Проверка ввода');
-      await expect(page.getByLabel(D[lang]['form.value'])).toHaveValue('85,5');
-      await expect(page.getByTestId('parsed')).toHaveAttribute('data-value', '85.5');
+      await expect(page.getByLabel(D[lang]['sc.col.area'], { exact: true })).toHaveValue('Проверка ввода');
+      await expect(page.getByLabel(D[lang]['sc.col.atp'], { exact: true })).toHaveValue('85,5');
+      await expect(page.getByLabel(D[lang]['sc.col.atp'], { exact: true })).toHaveAttribute('aria-invalid', 'false');
       expect(await page.evaluate(() => (window as unknown as { __noReload?: boolean }).__noReload)).toBe(true);
       if (lang !== 'ru') await page.screenshot({ path: `docs/evidence/phase1-K02-${lang}.png`, fullPage: true });
     }

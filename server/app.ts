@@ -18,6 +18,7 @@ import { traceRoutes } from './modules/trace/routes';
 import { prpRoutes } from './modules/prp/routes';
 import { ncRoutes } from './modules/nc/routes';
 import { reportRoutes } from './modules/reports/routes';
+import { scaffoldRoutes } from './modules/scaffold/routes';
 
 const DIST = fileURLToPath(new URL('../dist', import.meta.url));
 
@@ -79,6 +80,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance & { ct
   prpRoutes(app, ctx);
   ncRoutes(app, ctx);
   reportRoutes(app, ctx);
+  scaffoldRoutes(app, ctx);
 
   if (opts.serveClient !== false && existsSync(DIST)) {
     await app.register(fastifyStatic, { root: DIST, wildcard: false });

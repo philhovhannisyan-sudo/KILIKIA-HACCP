@@ -21,6 +21,7 @@ test.describe('K7 внешний аудитор', () => {
     for (const route of ROUTES) {
       await page.goto(route);
       await page.locator('main h1').waitFor();
+      await page.waitForLoadState('networkidle'); // каркасы дорисовывают панель и таблицу после загрузки данных
       const n = await page.locator('[data-action]').count();
       if (n) found.push(`${route}: ${n}`);
     }

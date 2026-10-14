@@ -8,6 +8,7 @@ for (const lang of ['ru', 'en', 'hy'] as const) {
     for (const route of ROUTES) {
       await page.goto(route);
       await page.locator('main h1').waitFor();
+      await page.waitForLoadState('networkidle'); // каркасы дорисовывают панель и таблицу после загрузки данных
       const { sw, cw } = await page.evaluate(() => ({
         sw: document.documentElement.scrollWidth,
         cw: document.documentElement.clientWidth,
