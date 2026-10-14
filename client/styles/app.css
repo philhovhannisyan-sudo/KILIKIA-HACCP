@@ -248,3 +248,5 @@ input[type="date"], input[type="datetime-local"] { font: inherit; padding: 6px 8
 .tree ul { padding-left: 16px; margin: 2px 0 0; list-style: '↳ '; }
 .card--bad { border-color: var(--danger); }
 @media (max-width: 819.98px) { .trace-tree { grid-template-columns: minmax(0, 1fr); } }
+.row--selected td { background: var(--accent-soft); }
+.fishbone { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px 12px; }

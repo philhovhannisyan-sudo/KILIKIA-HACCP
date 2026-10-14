@@ -10,6 +10,8 @@ import { planPdfContent, planSheets } from './plan/print';
 import { getPlan } from './plan/service';
 import { envSheet, journalPdf, monitoringSheet } from './monitoring/print';
 import { exercisePdf, exerciseSheets } from './trace/print';
+import { checklistPdf, checklistSheet } from './prp/print';
+import { ncPdf, ncSheets } from './nc/print';
 import type { Sheet } from '../print/tabular';
 import type { Actor } from '../core/actor';
 import type { Translator } from '../i18n';
@@ -66,6 +68,22 @@ export const printRoutes: RouteRegistrar = (app, ctx) => {
     if (format === 'xlsx') return send(reply, await toXlsx(sheets), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', `${name}.xlsx`);
     throw badRequest('unknown_format', { format });
   });
+  // Чек-лист PRP с доказательствами и протокол НС + отчёт CAPA
+  const doc = (url: string, perm: string, pdf: (id: string, tr: Translator) => { title: string; content: import('pdfmake/interfaces').Content[] }, sheets: (id: string, tr: Translator) => Sheet[], landscape: boolean) =>
+    app.get(url, { config: { auth: perm } }, async (req, reply) => {
+      const { id, format } = req.params as { id: string; format: string };
+      const tr = translator(langOf((req.query as { lang?: string }).lang));
+      const name = `${id}-${tr.lang}`;
+      if (format === 'pdf') {
+        const { title, content } = pdf(id, tr);
+        return send(reply, await renderPdf(tr, meta(tr, title, actorOf(req)), content, landscape), 'application/pdf', `${name}.pdf`);
+      }
+      if (format === 'csv') return send(reply, toCsv(sheets(id, tr), tr.lang), 'text/csv; charset=utf-8', `${name}.csv`);
+      if (format === 'xlsx') return send(reply, await toXlsx(sheets(id, tr)), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', `${name}.xlsx`);
+      throw badRequest('unknown_format', { format });
+    });
+  doc('/api/prp/checklists/:id/export.:format', 'a02.module.read', (id, tr) => checklistPdf(ctx.store.db, id, tr), (id, tr) => [checklistSheet(ctx.store.db, id, tr).sheet], false);
+  doc('/api/nonconformities/:id/export.:format', 'd04.module.read', (id, tr) => ncPdf(ctx.store.db, id, tr), (id, tr) => ncSheets(ctx.store.db, id, tr).sheets, true);
   journal('a03.module.read', (tr, f, to) => monitoringSheet(ctx.store.db, tr, f, to), 'monitoring');
   journal('a10.module.read', (tr, f, to) => envSheet(ctx.store.db, tr, f, to), 'env-records');
 };

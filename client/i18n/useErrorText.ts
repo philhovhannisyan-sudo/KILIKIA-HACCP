@@ -14,7 +14,8 @@ export function useErrorText() {
       };
       // статус партии в сообщении — на языке интерфейса
       const params = Object.fromEntries(Object.entries(e.params).map(([k, v]) =>
-        [k, k === 'status' && has(`status.batch.${String(v)}`) ? t(`status.batch.${String(v)}` as TKey) : fmt(v)]));
+        [k, k === 'status' && has(`status.batch.${String(v)}`) ? t(`status.batch.${String(v)}` as TKey)
+          : k === 'guard' && has(`guard.${String(v)}`) ? t(`guard.${String(v)}` as TKey) : fmt(v)]));
       if (has(key)) return t(key, params);
       return t('error.generic', { message: e.message });
     }

@@ -15,6 +15,8 @@ import { planRoutes } from './modules/plan/routes';
 import { printRoutes } from './modules/print';
 import { monitoringRoutes } from './modules/monitoring/routes';
 import { traceRoutes } from './modules/trace/routes';
+import { prpRoutes } from './modules/prp/routes';
+import { ncRoutes } from './modules/nc/routes';
 
 const DIST = fileURLToPath(new URL('../dist', import.meta.url));
 
@@ -73,6 +75,8 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance & { ct
   printRoutes(app, ctx);
   monitoringRoutes(app, ctx);
   traceRoutes(app, ctx);
+  prpRoutes(app, ctx);
+  ncRoutes(app, ctx);
 
   if (opts.serveClient !== false && existsSync(DIST)) {
     await app.register(fastifyStatic, { root: DIST, wildcard: false });

@@ -2,10 +2,11 @@ import { test, expect } from '../fixtures/test';
 import { MODULES, modulePath } from '../../shared/modules';
 
 // Модули, уже реализованные полностью: у них нет пометки «заглушка», у остальных она обязательна
-const IMPLEMENTED = new Set(['A01', 'A03', 'A04', 'A10']);
+const IMPLEMENTED = new Set(['A01', 'A02', 'A03', 'A04', 'A10', 'D04']);
 
 test.describe('K1 Все 26 маршрутов открываются без ошибок и пустых экранов', () => {
   test('K1 главная и 26 модулей', async ({ page }) => {
+    test.setTimeout(300_000); // 27 страниц с ожиданием загрузки данных под параллельной нагрузкой
     expect(MODULES).toHaveLength(26);
     await page.goto('/');
     await expect(page.getByTestId('page-home')).toBeVisible();
