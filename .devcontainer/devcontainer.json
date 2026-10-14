@@ -1,0 +1,10 @@
+{
+  "name": "HACCP Suite",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "postCreateCommand": "npm ci --no-audit --no-fund && npm run build",
+  "postAttachCommand": "npm start",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "HACCP Suite", "onAutoForward": "openBrowser" }
+  }
+}
